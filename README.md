@@ -51,6 +51,60 @@ ALTER USER 'sys_test'@'localhost' IDENTIFIED WITH mysql_native_password BY 'pass
 
 ### Решение 1
 
+Поднимаем инстанс MySQL через docker
+```
+docker run --name mysql-hw1201 -e MYSQL_ROOT_PASSWORD=qwerty123 -p 3306:3306 -d mysql:8.0
+
+```
+Заходим в оболочку контейнера
+```
+docker exec -it mysql-hw1201 bash
+```
+Подключаемся к MySQL как root
+```
+mysql -u root -p
+```
+Вводим пароль и выполняем SQL запрос:
+```
+CREATE USER 'sys_temp'@'localhost' IDENTIFIED BY 'password';
+```
+Получаем список пользователей базы запросом:
+```
+SELECT User, Host FROM mysql.user;
+```
+<img src="img/img1.jpg">
+
+Выдаем привилегии пользователю:
+```
+GRANT ALL PRIVILEGES ON *.* TO 'sys_temp'@'localhost';
+FLUSH PRIVILEGES;
+```
+Получаем список прав пользователя:
+```
+SHOW GRANTS FOR 'sys_temp'@'localhost';
+```
+<img src="img/img2.jpg">
+Меняем тип аутентификации:
+```
+ALTER USER 'sys_temp'@'localhost' IDENTIFIED WITH mysql_native_password BY 'password';
+FLUSH PRIVILEGES;
+```
+Подключаемся под пользователем:
+```
+mysql -u sys_temp -p
+```
+Создаем БД:
+```
+CREATE DATABASE sakila;
+USE sakila;
+```
+Восстанавливаем схему и данные:
+```
+mysql -u sys_temp -p sakila < sakila-schema.sql
+mysql -u sys_temp -p sakila < sakila-data.sql
+```
+Скриншот диаграммы в IDE:
+<img src="img/img3.jpg">
 
 ---
 
